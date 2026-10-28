@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Records</title>
+  <script>
+    try {
+      var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><span class="logo"><svg class="i"><use href="#i-logo"/></svg></span> Student Records</div>
+      <nav class="nav">
+        <a href="#/dashboard" class="nav-link" data-view="dashboard"><svg class="i"><use href="#i-dashboard"/></svg> Dashboard</a>
+        <a href="#/students" class="nav-link" data-view="students"><svg class="i"><use href="#i-users"/></svg> Students</a>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="db-status" id="db-status" title="MongoDB Atlas connection">
+          <span class="dot"></span><span id="db-label">Checking…</span>
+        </div>
+        <button class="btn ghost full" id="theme-toggle" type="button">
+          <svg class="i theme-sun"><use href="#i-sun"/></svg>
+          <svg class="i theme-moon"><use href="#i-moon"/></svg>
+          <span>Toggle theme</span>
+        </button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menu-btn" aria-label="Open menu"><svg class="i"><use href="#i-menu"/></svg></button>
+        <h1 id="page-title">Dashboard</h1>
+        <button class="btn primary" data-action="add"><svg class="i"><use href="#i-plus"/></svg><span class="btn-text">Add student</span></button>
+      </header>
+
+      <main class="content">
+        <!-- ============ DASHBOARD ============ -->
+        <section id="view-dashboard" class="view">
+          <div id="dash-error" class="banner error" hidden>
+            <svg class="i"><use href="#i-alert"/></svg>
+            <span id="dash-error-text"></span>
+            <button class="btn" data-action="retry-dashboard">Retry</button>
+          </div>
+
+          <div class="grid grid-4">
+            <div class="card stat"><div class="stat-label">Total students</div><div class="stat-value" id="stat-total"></div></div>
+            <div class="card stat"><div class="stat-label">Added this month</div><div class="stat-value" id="stat-month"></div></div>
+            <div class="card stat"><div class="stat-label">Active students</div><div class="stat-value" id="stat-active"></div></div>
+            <div class="card stat">
+              <div class="stat-label">Database</div>
+              <div class="stat-value small" id="db-card-value">Checking…</div>
+              <div class="stat-sub" id="db-card-sub">MongoDB Atlas</div>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="card">
+              <div class="card-head"><h2>Registrations (last 6 months)</h2></div>
+              <div id="trend"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>By status</h2></div>
+              <div id="status-list"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-2b">
+            <div class="card">
+              <div class="card-head"><h2>Recently added</h2><a class="link-sm" href="#/students">View all</a></div>
+              <div id="recent"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>By course</h2></div>
+              <div id="course-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ STUDENTS ============ -->
+        <section id="view-students" class="view" hidden>
+          <div class="toolbar">
+            <label class="search"><svg class="i"><use href="#i-search"/></svg>
+              <input id="search" type="search" placeholder="Search name, email or student ID…" autocomplete="off" />
+            </label>
+            <select id="filter-status" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option>Active</option><option>Inactive</option><option>Graduated</option>
+            </select>
+            <select id="filter-course" aria-label="Filter by course"><option value="">All courses</option></select>
+            <select id="sort" aria-label="Sort">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="name_asc">Name A–Z</option>
+              <option value="name_desc">Name Z–A</option>
+              <option value="email_asc">Email A–Z</option>
+            </select>
+            <div class="toolbar-end">
+              <button class="btn" id="refresh-btn" type="button"><svg class="i"><use href="#i-refresh"/></svg><span class="btn-text">Refresh</span></button>
+              <button class="btn" id="export-btn" type="button"><svg class="i"><use href="#i-download"/></svg><span class="btn-text">Export CSV</span></button>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-scroll" id="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Student</th><th class="hide-lg">Student ID</th><th class="hide-md">Course</th>
+                    <th class="hide-md">Sem.</th><th>Status</th><th class="hide-sm">Added</th><th></th>
+                  </tr>
+                </thead>
+                <tbody id="student-rows"></tbody>
+              </table>
+            </div>
+            <div id="students-empty" class="empty" hidden></div>
+            <div class="pager" id="pager">
+              <span class="muted" id="page-info"></span>
+              <div class="pager-controls">
+                <select id="page-size" aria-label="Rows per page"><option>10</option><option>25</option><option>50</option></select>
+                <button class="icon-btn" id="prev" aria-label="Previous page"><svg class="i"><use href="#i-left"/></svg></button>
+                <span id="page-num" class="muted"></span>
+                <button class="icon-btn" id="next" aria-label="Next page"><svg class="i"><use href="#i-right"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add / Edit dialog -->
+  <dialog id="form-dialog">
+    <form id="student-form" novalidate>
+      <div class="dialog-head"><h2 id="form-title">Add student</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+      <div class="dialog-body form-grid">
+        <div class="field"><label for="f-name">Full name <span class="req">*</span></label>
+          <input id="f-name" name="name" maxlength="100" autocomplete="off" placeholder="e.g. Aayushi Bansal" /><small class="err" data-err="name"></small></div>
+        <div class="field"><label for="f-email">Email <span class="req">*</span></label>
+          <input id="f-email" name="email" type="email" maxlength="254" autocomplete="off" placeholder="name@example.com" /><small class="err" data-err="email"></small></div>
+        <div class="field"><label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" maxlength="20" placeholder="+91 98765 43210" /><small class="err" data-err="phone"></small></div>
+        <div class="field"><label for="f-sid">Student ID</label>
+          <input id="f-sid" name="studentId" maxlength="30" placeholder="e.g. CS2025-014" /><small class="err" data-err="studentId"></small></div>
+        <div class="field"><label for="f-course">Course / department</label>
+          <input id="f-course" name="course" maxlength="100" list="course-options" placeholder="e.g. Computer Science" />
+          <datalist id="course-options"></datalist><small class="err" data-err="course"></small></div>
+        <div class="field"><label for="f-sem">Semester</label>
+          <input id="f-sem" name="semester" type="number" min="1" max="12" placeholder="1–12" /><small class="err" data-err="semester"></small></div>
+        <div class="field"><label for="f-date">Enrollment date</label>
+          <input id="f-date" name="enrollmentDate" type="date" /><small class="err" data-err="enrollmentDate"></small></div>
+        <div class="field"><label for="f-status">Status</label>
+          <select id="f-status" name="status"><option>Active</option><option>Inactive</option><option>Graduated</option></select>
+          <small class="err" data-err="status"></small></div>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" data-close>Cancel</button>
+        <button type="submit" class="btn primary" id="save-btn">Save student</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Details dialog -->
+  <dialog id="detail-dialog">
+    <div class="dialog-head"><h2>Student details</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="dialog-body" id="detail-body"></div>
+    <div class="dialog-foot">
+      <button class="btn danger-ghost" id="detail-delete" data-action="delete"><svg class="i"><use href="#i-trash"/></svg> Delete</button>
+      <button class="btn primary" id="detail-edit" data-action="edit"><svg class="i"><use href="#i-edit"/></svg> Edit</button>
+    </div>
+  </dialog>
+
+  <!-- Confirm dialog -->
+  <dialog id="confirm-dialog" class="small">
+    <form method="dialog">
+      <div class="dialog-body">
+        <h2 id="confirm-title">Are you sure?</h2>
+        <p class="muted" id="confirm-text"></p>
+      </div>
+      <div class="dialog-foot">
+        <button value="no" class="btn">Cancel</button>
+        <button value="yes" class="btn danger">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toasts" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
